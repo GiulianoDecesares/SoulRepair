@@ -46,14 +46,17 @@ public class UserInterface : MonoBehaviour
         {
             if (this.currentBrokenSoulsAmount > 0)
                 this.currentBrokenSoulsAmount--;
+
+            this.currentHealthySoulsAmount++;
         }
         else if (previousState == Soul.SoulState.Healthy)
         {
             if (this.currentHealthySoulsAmount > 0)
                 this.currentHealthySoulsAmount--;
+
+            this.currentBrokenSoulsAmount++;
         }
         
-        this.OnSoulCreated(soul);
         this.UpdateSlider();
     }
 

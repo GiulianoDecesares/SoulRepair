@@ -74,18 +74,34 @@ public class SoulManager : MonoBehaviour
     public void OnSoulChanged(Soul soul, Soul.SoulState previousState)
     {
         this.userInterface.OnSoulChanged(soul, previousState);
+        this.CheckForWinCondition();
     }
 
     private void CheckForWinCondition()
     {
-        if (this.instantiatedSouls.Where(soul => soul.GetState() == Soul.SoulState.Broken).ToList().Count == 0)
+        
+
+        /*
+        if (!brokenInstantiatedSouls.Any())
         {
             // Win
         }
-        else if (this.instantiatedSouls.Where(soul => soul.GetState() == Soul.SoulState.Healthy).ToList().Count == 0)
+        else if (!healthyInstantiatedSouls.Any())
         {
             // Lose
             Debug.Log("Loose");
         }
+
+        Debug.Log("Checking for win condition");
+
+        foreach (Soul soul in brokenInstantiatedSouls)
+        {
+            Debug.Log("Broken -> " + soul);
+        }
+        
+        foreach (Soul soul in healthyInstantiatedSouls)
+        {
+            Debug.Log("Healthy -> " + soul);
+        }*/
     }
 }
