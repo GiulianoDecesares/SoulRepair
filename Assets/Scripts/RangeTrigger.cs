@@ -7,6 +7,7 @@ public class RangeTrigger : MonoBehaviour
     [SerializeField] private bool userOverlapSphere;
     
     public System.Action<Collider[]> onDetection;
+    public System.Action<Collider[]> onDetectionExit;
 
     private void Awake()
     {
@@ -36,6 +37,11 @@ public class RangeTrigger : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
+    {
+        this.onDetection?.Invoke(new [] { other });
+    }
+
+    private void OnTriggerExit(Collider other)
     {
         this.onDetection?.Invoke(new [] { other });
     }

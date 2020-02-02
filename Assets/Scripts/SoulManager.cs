@@ -15,11 +15,13 @@ public class SoulManager : MonoBehaviour
     [SerializeField] private uint brokenSoulsAmount;
     [SerializeField] private uint healthySoulsAmount;
 
-    private List<Soul> instantiatedSouls;
+    private List<Soul> brokenSouls;
+    private List<Soul> healthySouls;
 
     private void Awake()
     {
-        this.instantiatedSouls = new List<Soul>();
+        this.brokenSouls = new List<Soul>();
+        this.healthySouls = new List<Soul>();
     }
 
     private void Start()
@@ -28,6 +30,19 @@ public class SoulManager : MonoBehaviour
         for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount + this.healthySoulsAmount; soulIndex++)
         {
             Soul soul = this.InstantiateSoul(this.GetRandomNavMeshPosition(), soulIndex < this.brokenSoulsAmount ? Soul.SoulState.Broken : Soul.SoulState.Healthy);
+
+            if (soul != null)
+            {
+                if (soul.GetState() == Soul.SoulState.Broken)
+                {
+                    this.brokenSouls.Add(soul);
+                }
+                else if (soul.GetState() == Soul.SoulState.Broken)
+                {
+                    this.healthySouls.Add(soul);
+                }
+            }
+            
             this.userInterface.OnSoulCreated(soul); 
         }
     }
@@ -63,11 +78,18 @@ public class SoulManager : MonoBehaviour
     
     public void OnSoulDie(Soul soul)
     {
-        if (this.instantiatedSouls.Contains(soul))
-            this.instantiatedSouls.Remove(soul);
+        if (soul.GetState() == Soul.SoulState.Broken)
+        {
+            if (this.brokenSouls.Contains(soul))
+                this.brokenSouls.Remove(soul);
+        }
+        else if (soul.GetState() == Soul.SoulState.Healthy)
+        {
+            if (this.healthySouls.Contains(soul))
+                this.healthySouls.Remove(soul);
+        }
         
         this.userInterface.OnSoulDestroyed(soul);
-
         this.CheckForWinCondition();
     }
 
@@ -79,7 +101,17 @@ public class SoulManager : MonoBehaviour
 
     private void CheckForWinCondition()
     {
-        
+        if (this.healthySouls.Count <= 0)
+        {
+            Time.timeScale = 0;
+            Debug.Log("LOSE!");
+        }
+
+        if (this.brokenSouls.Count <= 0)
+        {
+            Time.timeScale = 0;
+            Debug.Log("WIN!");
+        }
 
         /*
         if (!brokenInstantiatedSouls.Any())

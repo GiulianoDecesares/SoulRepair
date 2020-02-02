@@ -11,10 +11,13 @@ using UnityEngine.PlayerLoop;
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
-	[Header("Attack")] [SerializeField] private KeyCode attack;
+	[Header("Attack")] 
+	[SerializeField] private KeyCode attack;
 	[SerializeField] private float damagePerHit;
+	[SerializeField] private RangeTrigger attackTrigger;
 
-	[Header("Movement")] [SerializeField] private float movementSpeed;
+	[Header("Movement")] 
+	[SerializeField] private float movementSpeed;
 	[SerializeField] private float gravity;
 	[SerializeField] private float rotationSpeed;
 
@@ -23,12 +26,25 @@ public class PlayerController : MonoBehaviour
 	
 	private CharacterController characterController;
 
-	private List<WeakReference<IEnemy>> spottedEnemies;
-
 	private void Awake()
 	{
 		this.characterController = this.gameObject.GetComponent<CharacterController>();
-		this.spottedEnemies = new List<WeakReference<IEnemy>>();
+	}
+
+	private void OnEnable()
+	{
+		if (this.attackTrigger != null)
+		{
+			this.attackTrigger.onDetection += this.OnAttackRangeEnter;
+		}
+	}
+
+	private void OnDisable()
+	{
+		if (this.attackTrigger != null)
+		{
+			this.attackTrigger.onDetection -= this.OnAttackRangeEnter;
+		}
 	}
 
 	private void Update()
@@ -47,57 +63,18 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetKeyDown(this.attack))
 		{
 			this.animator.Slash();
-			this.Attack();
-		}
-		else if (Input.GetKeyUp(this.attack))
-		{
-			
 		}
 	}
 
-	private void OnTriggerEnter(Collider other)
+	private void OnAttackRangeEnter(Collider[] others)
 	{
-		IEnemy enemy = other.GetComponent<IEnemy>();
-
-		if (enemy != null)
+		foreach (Collider other in others)
 		{
-			this.spottedEnemies.Add(new WeakReference<IEnemy>(enemy));
-		}
-	}
+			IEnemy enemy = other.GetComponent<IEnemy>();
 
-	private void OnTriggerExit(Collider other)
-	{
-		IEnemy otherEnemy = other.GetComponent<IEnemy>();
-
-		if (otherEnemy != null)
-		{
-			List<WeakReference<IEnemy>> selectedEnemies = this.spottedEnemies.Where(item =>
+			if (enemy != null && !enemy.IsDead())
 			{
-				bool result = false;
-
-				if (item.TryGetTarget(out IEnemy localEnemyReference))
-				{
-					result = ReferenceEquals(otherEnemy, localEnemyReference);
-				}
-
-				return result;
-			}).ToList();
-
-			foreach (WeakReference<IEnemy> selectedEnemy in selectedEnemies)
-			{
-				this.spottedEnemies.Remove(selectedEnemy);
-			}
-		}
-	}
-
-	private void Attack()
-	{
-		foreach (WeakReference<IEnemy> enemyReference in this.spottedEnemies)
-		{
-			if (enemyReference != null && enemyReference.TryGetTarget(out IEnemy enemy))
-			{
-				if (!enemy.IsDead())
-					enemy.TakeDamage(this.damagePerHit);
+				enemy.TakeDamage(this.damagePerHit);
 			}
 		}
 	}
