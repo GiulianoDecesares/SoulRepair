@@ -10,37 +10,32 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Soul : MonoBehaviour, IEnemy
 {
-    [SerializeField] private SoulState initialState;
-
+    // Inspector references
     [SerializeField] private Renderer modelRenderer;
-    
-    [SerializeField] private float defaultSpeed;
-    [SerializeField] private float followingSpeed;
-
-    [SerializeField] private float life;
-    
     [SerializeField] private RangeTrigger fieldOfView;
     [SerializeField] private RangeTrigger interactionRange;
     
+    // Inspector configuration
+    [SerializeField] private float defaultSpeed;
+    [SerializeField] private float followingSpeed;
+    [SerializeField] private float life;
+    
+    // Private references
     public enum SoulState { Broken, Healthy };
     private SoulState currentState;
     
     private NavMeshAgent movementAgent;
     private bool isMoving;
-    
     private Soul target;
-
-    public Queue<System.Action<Soul>> onDieActionQueue;
+    private SoulManager manager;
+    
     
     private void Awake()
     {
         this.movementAgent = this.gameObject.GetComponent<NavMeshAgent>();
-        this.onDieActionQueue = new Queue<Action<Soul>>();
 
         this.isMoving = false;
         this.target = null;
-        
-        this.SetState(this.initialState);
     }
 
     private void Start()
@@ -85,10 +80,7 @@ public class Soul : MonoBehaviour, IEnemy
     {
         if (this.target != null)
         {
-            if (this.target.currentState == SoulState.Healthy)
-                this.movementAgent.destination = this.target.gameObject.transform.position;
-            else
-                this.target = null;
+            this.movementAgent.destination = this.target.gameObject.transform.position;
         }
         else
         {
@@ -159,6 +151,11 @@ public class Soul : MonoBehaviour, IEnemy
                     {
                         // Broken catch healthy
                         otherSoul.SetState(SoulState.Broken);
+                        
+                        // Notify
+                        this.manager.OnSoulChanged(otherSoul, SoulState.Healthy);
+                        
+                        // Dispose target and normalize speed
                         this.target = null;
                         this.movementAgent.speed = this.defaultSpeed;
                     }
@@ -190,7 +187,7 @@ public class Soul : MonoBehaviour, IEnemy
     {
         if (!this.isMoving)
         {
-            Vector3 newPosition = this.GetRandomNavMeshPosition(); // new Vector3(Random.Range(-25f, 25f), 0.0f, Random.Range(-25f, 25f));
+            Vector3 newPosition = this.GetRandomNavMeshPosition();
 
             if (this.movementAgent != null)
             {
@@ -216,7 +213,7 @@ public class Soul : MonoBehaviour, IEnemy
             Debug.LogError("Null renderer component");
         }
     }
-
+    
     public void UpdateVisuals()
     {
         switch (this.currentState)
@@ -234,6 +231,12 @@ public class Soul : MonoBehaviour, IEnemy
         }
     }
 
+    public void Initialize(SoulManager manager, SoulState initialState)
+    {
+        this.manager = manager;
+        this.SetState(initialState);
+    }
+    
     public void SetState(SoulState newState)
     {
         this.currentState = newState;
@@ -251,9 +254,7 @@ public class Soul : MonoBehaviour, IEnemy
 
         if (this.IsDead())
         {
-            while (this.onDieActionQueue.Count > 0)
-                this.onDieActionQueue.Dequeue()?.Invoke(this);
-            
+            this.manager.OnSoulDie(this);
             Destroy(this.gameObject);
         }
     }

@@ -40,6 +40,23 @@ public class UserInterface : MonoBehaviour
         this.UpdateSlider();
     }
 
+    public void OnSoulChanged(Soul soul, Soul.SoulState previousState)
+    {
+        if (previousState == Soul.SoulState.Broken)
+        {
+            if (this.currentBrokenSoulsAmount > 0)
+                this.currentBrokenSoulsAmount--;
+        }
+        else if (previousState == Soul.SoulState.Healthy)
+        {
+            if (this.currentHealthySoulsAmount > 0)
+                this.currentHealthySoulsAmount--;
+        }
+        
+        this.OnSoulCreated(soul);
+        this.UpdateSlider();
+    }
+
     private void UpdateSlider()
     {
         if (this.slider != null)

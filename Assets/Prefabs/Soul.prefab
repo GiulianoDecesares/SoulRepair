@@ -57,7 +57,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 1.75
   m_BaseOffset: 1
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!54 &4100148567758594914
 Rigidbody:
@@ -87,10 +87,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8d502a286e9b541ae168932ae4f6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialState: 0
   modelRenderer: {fileID: 7718390321794356430}
   defaultSpeed: 3.5
-  followingSpeed: 5
+  followingSpeed: 6
   life: 5
   fieldOfView: {fileID: 7084898049520521762}
   interactionRange: {fileID: 143029972817029753}

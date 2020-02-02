@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
@@ -23,47 +24,23 @@ public class SoulManager : MonoBehaviour
 
     private void Start()
     {
-        for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount; soulIndex++)
+        // Instantiate all souls
+        for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount + this.healthySoulsAmount; soulIndex++)
         {
-            Vector3 randomPosition = this.GetRandomNavMeshPosition();
-
-            GameObject soulGameObject = Instantiate(this.soulPrefab, randomPosition, Quaternion.identity);
-            Soul soul = soulGameObject.GetComponent<Soul>();
-            soul?.SetState(Soul.SoulState.Broken);
-            this.SubscribeToSoul(soul);
-            
-            this.userInterface.OnSoulCreated(soul);
-        }
-        
-        for (uint soulIndex = 0; soulIndex < this.healthySoulsAmount; soulIndex++)
-        {
-            Vector3 randomPosition = this.GetRandomNavMeshPosition();
-            
-            GameObject soulGameObject = Instantiate(this.soulPrefab, randomPosition, Quaternion.identity);
-            Soul soul = soulGameObject.GetComponent<Soul>();
-            soul?.SetState(Soul.SoulState.Healthy);
-            this.SubscribeToSoul(soul);
-            
-            this.userInterface.OnSoulCreated(soul);
+            Soul soul = this.InstantiateSoul(this.GetRandomNavMeshPosition(), soulIndex < this.brokenSoulsAmount ? Soul.SoulState.Broken : Soul.SoulState.Healthy);
+            this.userInterface.OnSoulCreated(soul); 
         }
     }
 
-    private void SubscribeToSoul(Soul soul)
+    private Soul InstantiateSoul(Vector3 position, Soul.SoulState initialState)
     {
-        if (soul != null)
-        {
-            soul.onDieActionQueue.Enqueue(this.OnSoulDie);
-        }
-    }
+        GameObject soulGameObject = Instantiate(this.soulPrefab, position, Quaternion.identity);
+        Soul soul = soulGameObject.GetComponent<Soul>();
+        soul?.Initialize(this, initialState);
 
-    private void OnSoulDie(Soul soul)
-    {
-        if (this.instantiatedSouls.Contains(soul))
-            this.instantiatedSouls.Remove(soul);
-        
-        this.userInterface.OnSoulDestroyed(soul);
+        return soul;
     }
-
+    
     private Vector3 GetRandomNavMeshPosition()
     {
         Vector3 randomPoint = Vector3.zero;
@@ -82,5 +59,33 @@ public class SoulManager : MonoBehaviour
         } while (randomPoint.y > 1);
 
         return randomPoint;
+    }
+    
+    public void OnSoulDie(Soul soul)
+    {
+        if (this.instantiatedSouls.Contains(soul))
+            this.instantiatedSouls.Remove(soul);
+        
+        this.userInterface.OnSoulDestroyed(soul);
+
+        this.CheckForWinCondition();
+    }
+
+    public void OnSoulChanged(Soul soul, Soul.SoulState previousState)
+    {
+        this.userInterface.OnSoulChanged(soul, previousState);
+    }
+
+    private void CheckForWinCondition()
+    {
+        if (this.instantiatedSouls.Where(soul => soul.GetState() == Soul.SoulState.Broken).ToList().Count == 0)
+        {
+            // Win
+        }
+        else if (this.instantiatedSouls.Where(soul => soul.GetState() == Soul.SoulState.Healthy).ToList().Count == 0)
+        {
+            // Lose
+            Debug.Log("Loose");
+        }
     }
 }
