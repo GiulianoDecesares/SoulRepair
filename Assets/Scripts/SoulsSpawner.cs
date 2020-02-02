@@ -14,15 +14,26 @@ public class SoulsSpawner : MonoBehaviour
     [SerializeField] private uint brokenSoulsAmount;
     [SerializeField] private uint healthySoulsAmount;
 
-    
+    private List<Soul> instantiatedSouls;
+
+    private void Awake()
+    {
+        this.instantiatedSouls = new List<Soul>();
+    }
+
     private void Start()
     {
-        Vector3 randomPosition = this.GetRandomNavMeshPosition();
-
-        uint totalAmountOfEnemies = this.brokenSoulsAmount + this.healthySoulsAmount;
-
-        for (uint currentEnemyIndex = 0; currentEnemyIndex < totalAmountOfEnemies; currentEnemyIndex++)
+        for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount; soulIndex++)
         {
+            Vector3 randomPosition = this.GetRandomNavMeshPosition();
+            
+            
+        }
+        
+        for (uint soulIndex = 0; soulIndex < this.healthySoulsAmount; soulIndex++)
+        {
+            Vector3 randomPosition = this.GetRandomNavMeshPosition();
+            
             
         }
     }

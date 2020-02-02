@@ -11,6 +11,8 @@ public class Soul : MonoBehaviour, IEnemy
 {
     [SerializeField] private SoulState initialState;
 
+    [SerializeField] private Renderer modelRenderer;
+    
     [SerializeField] private float defaultSpeed;
     [SerializeField] private float followingSpeed;
 
@@ -201,11 +203,9 @@ public class Soul : MonoBehaviour, IEnemy
 
     private void ChangeColor(Color color)
     {
-        Renderer renderer = this.GetComponent<Renderer>();
-
-        if (renderer != null)
+        if (this.modelRenderer != null)
         {
-            renderer.material.color = color;
+            this.modelRenderer.material.color = color;
         }
         else
         {

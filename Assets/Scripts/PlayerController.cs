@@ -39,6 +39,9 @@ public class PlayerController : MonoBehaviour
 		this.characterController.Move(move * this.movementSpeed);
 		this.transform.Rotate(rotation);
 		
+		if (Input.GetKeyDown(this.attack))
+			this.Attack();
+		
 		/*
 		if (this.characterController != null)
 		{
