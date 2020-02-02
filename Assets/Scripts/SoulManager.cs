@@ -95,12 +95,24 @@ public class SoulManager : MonoBehaviour
 
     public void OnSoulChanged(Soul soul, Soul.SoulState previousState)
     {
+        this.OnSoulDie(soul);
+        
+        if (soul.GetState() == Soul.SoulState.Broken)
+        {
+            this.brokenSouls.Add(soul);
+        }
+        else if (soul.GetState() == Soul.SoulState.Healthy)
+        {
+            this.healthySouls.Add(soul);
+        }
+        
         this.userInterface.OnSoulChanged(soul, previousState);
         this.CheckForWinCondition();
     }
 
     private void CheckForWinCondition()
     {
+        /*
         if (this.healthySouls.Count <= 0)
         {
             Time.timeScale = 0;
@@ -113,7 +125,6 @@ public class SoulManager : MonoBehaviour
             Debug.Log("WIN!");
         }
 
-        /*
         if (!brokenInstantiatedSouls.Any())
         {
             // Win
