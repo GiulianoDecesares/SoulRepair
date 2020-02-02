@@ -239,6 +239,11 @@ public class Soul : MonoBehaviour, IEnemy
         this.currentState = newState;
         this.UpdateVisuals();
     }
+
+    public SoulState GetState()
+    {
+        return this.currentState;
+    }
     
     public void TakeDamage(float damage)
     {
