@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -20,13 +21,14 @@ public class PlayerController : MonoBehaviour
 	
 	private CharacterController characterController;
 	private Vector3 moveDirection;
-	private List<IEnemy> spottedEnemies;
+	
+	private List<WeakReference<IEnemy>> spottedEnemies;
 
 	private void Awake()
 	{
 		this.characterController = this.gameObject.GetComponent<CharacterController>();
 		this.moveDirection = Vector3.zero;
-		this.spottedEnemies = new List<IEnemy>();
+		this.spottedEnemies = new List<WeakReference<IEnemy>>();
 	}
 
 	private void Update()
@@ -59,23 +61,44 @@ public class PlayerController : MonoBehaviour
 	
 		if (enemy != null)
 		{
-			this.spottedEnemies.Add(enemy);
+			this.spottedEnemies.Add(new WeakReference<IEnemy>(enemy));
 		}
 	}
 
 	private void OnTriggerExit(Collider other)
 	{
-		IEnemy enemy = other.GetComponent<IEnemy>();
-	
-		if (enemy != null && this.spottedEnemies.Contains(enemy))
-		{	
-			this.spottedEnemies.Remove(enemy);
+		IEnemy otherEnemy = other.GetComponent<IEnemy>();
+
+		if (otherEnemy != null)
+		{
+			List<WeakReference<IEnemy>> selectedEnemies = this.spottedEnemies.Where(item =>
+			{
+				bool result = false;
+
+				if (item.TryGetTarget(out IEnemy localEnemyReference))
+				{
+					result = ReferenceEquals(otherEnemy, localEnemyReference);
+				}
+
+				return result;
+			}).ToList();
+
+			foreach (WeakReference<IEnemy> selectedEnemy in selectedEnemies)
+			{
+				this.spottedEnemies.Remove(selectedEnemy);
+			}
 		}
 	}
 
 	private void Attack()
 	{
-		foreach (IEnemy enemy in this.spottedEnemies)
-			enemy.TakeDamage(this.damagePerHit);
+		foreach (WeakReference<IEnemy> enemyReference in this.spottedEnemies)
+		{
+			if (enemyReference != null && enemyReference.TryGetTarget(out IEnemy enemy))
+			{
+				if (!enemy.IsDead())
+					enemy.TakeDamage(this.damagePerHit);
+			}
+		}
 	}
 }

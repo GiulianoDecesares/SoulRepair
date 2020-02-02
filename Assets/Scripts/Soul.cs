@@ -13,6 +13,8 @@ public class Soul : MonoBehaviour, IEnemy
 
     [SerializeField] private float defaultSpeed;
     [SerializeField] private float followingSpeed;
+
+    [SerializeField] private float life;
     
     public enum SoulState { Broken, Healthy };
     private SoulState currentState;
@@ -162,12 +164,27 @@ public class Soul : MonoBehaviour, IEnemy
             }
         }
     }
+    
+    private Vector3 GetRandomNavMeshPosition()
+    {
+        NavMeshTriangulation navMeshTriangulation = NavMesh.CalculateTriangulation();
+
+        int randomIndex = Random.Range(0, navMeshTriangulation.indices.Length - 3);
+
+        Vector3 randomPoint = Vector3.Lerp(navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex]],
+            navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 1]], Random.value);
+
+        Vector3.Lerp(randomPoint, navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 2]],
+            Random.value);
+
+        return randomPoint;
+    }
 
     private void MoveToRandomSpot()
     {
         if (!this.isMoving)
         {
-            Vector3 newPosition = new Vector3(Random.Range(-25f, 25f), 0.0f, Random.Range(-25f, 25f));
+            Vector3 newPosition = this.GetRandomNavMeshPosition(); // new Vector3(Random.Range(-25f, 25f), 0.0f, Random.Range(-25f, 25f));
 
             if (this.movementAgent != null)
             {
@@ -215,6 +232,14 @@ public class Soul : MonoBehaviour, IEnemy
     
     public void TakeDamage(float damage)
     {
-        Debug.Log($"Taking damage {damage}");
+        this.life -= damage;
+        
+        if (this.IsDead())
+            Destroy(this.gameObject);
+    }
+
+    public bool IsDead()
+    {
+        return this.life <= 0;
     }
 }

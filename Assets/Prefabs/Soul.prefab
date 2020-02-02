@@ -137,6 +137,7 @@ MonoBehaviour:
   initialState: 0
   defaultSpeed: 3.5
   followingSpeed: 5
+  life: 5
   fieldOfView: {fileID: 7084898049520521762}
   interactionRange: {fileID: 143029972817029753}
 --- !u!1001 &4100148568584372652
