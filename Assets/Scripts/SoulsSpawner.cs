@@ -25,17 +25,47 @@ public class SoulsSpawner : MonoBehaviour
     {
         for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount; soulIndex++)
         {
-            Vector3 randomPosition = this.GetRandomNavMeshPosition();
-            
-            
+            Vector3 randomPosition = Vector3.zero;
+
+            do
+            {
+                randomPosition = this.GetRandomNavMeshPosition();
+            } while (randomPosition.y > 1);
+
+            GameObject soulGameObject = Instantiate(this.soulPrefab, randomPosition, Quaternion.identity);
+            Soul soul = soulGameObject.GetComponent<Soul>();
+            soul?.SetState(Soul.SoulState.Broken);
+            this.SubscribeToSoul(soul);
         }
         
         for (uint soulIndex = 0; soulIndex < this.healthySoulsAmount; soulIndex++)
         {
-            Vector3 randomPosition = this.GetRandomNavMeshPosition();
+            Vector3 randomPosition = Vector3.zero;
+
+            do
+            {
+                randomPosition = this.GetRandomNavMeshPosition();
+            } while (randomPosition.y > 1);
             
-            
+            GameObject soulGameObject = Instantiate(this.soulPrefab, randomPosition, Quaternion.identity);
+            Soul soul = soulGameObject.GetComponent<Soul>();
+            soul?.SetState(Soul.SoulState.Healthy);
+            this.SubscribeToSoul(soul);
         }
+    }
+
+    private void SubscribeToSoul(Soul soul)
+    {
+        if (soul != null)
+        {
+            soul.onDieActionQueue.Enqueue(this.OnSoulDie);
+        }
+    }
+
+    private void OnSoulDie(Soul soul)
+    {
+        if (this.instantiatedSouls.Contains(soul))
+            this.instantiatedSouls.Remove(soul);
     }
 
     private Vector3 GetRandomNavMeshPosition()

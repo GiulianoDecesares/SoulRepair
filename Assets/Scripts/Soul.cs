@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.AI;
@@ -18,27 +19,28 @@ public class Soul : MonoBehaviour, IEnemy
 
     [SerializeField] private float life;
     
-    public enum SoulState { Broken, Healthy };
-    private SoulState currentState;
-    
     [SerializeField] private RangeTrigger fieldOfView;
     [SerializeField] private RangeTrigger interactionRange;
+    
+    public enum SoulState { Broken, Healthy };
+    private SoulState currentState;
     
     private NavMeshAgent movementAgent;
     private bool isMoving;
     
     private Soul target;
 
+    public Queue<System.Action<Soul>> onDieActionQueue;
+    
     private void Awake()
     {
-        this.currentState = this.initialState;
-        
-        this.UpdateVisuals();
-        
         this.movementAgent = this.gameObject.GetComponent<NavMeshAgent>();
+        this.onDieActionQueue = new Queue<Action<Soul>>();
 
         this.isMoving = false;
         this.target = null;
+        
+        this.SetState(this.initialState);
     }
 
     private void Start()
@@ -83,7 +85,10 @@ public class Soul : MonoBehaviour, IEnemy
     {
         if (this.target != null)
         {
-            this.movementAgent.destination = this.target.gameObject.transform.position;
+            if (this.target.currentState == SoulState.Healthy)
+                this.movementAgent.destination = this.target.gameObject.transform.position;
+            else
+                this.target = null;
         }
         else
         {
@@ -153,8 +158,7 @@ public class Soul : MonoBehaviour, IEnemy
                     if (otherSoul.currentState == SoulState.Healthy)
                     {
                         // Broken catch healthy
-                        otherSoul.currentState = SoulState.Broken;
-                        otherSoul.UpdateVisuals();
+                        otherSoul.SetState(SoulState.Broken);
                         this.target = null;
                         this.movementAgent.speed = this.defaultSpeed;
                     }
@@ -229,13 +233,24 @@ public class Soul : MonoBehaviour, IEnemy
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    public void SetState(SoulState newState)
+    {
+        this.currentState = newState;
+        this.UpdateVisuals();
+    }
     
     public void TakeDamage(float damage)
     {
         this.life -= damage;
-        
+
         if (this.IsDead())
+        {
+            while (this.onDieActionQueue.Count > 0)
+                this.onDieActionQueue.Dequeue()?.Invoke(this);
+            
             Destroy(this.gameObject);
+        }
     }
 
     public bool IsDead()
