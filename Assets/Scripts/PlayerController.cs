@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
 
 	[Header("Movement")] 
 	[SerializeField] private float movementSpeed;
-	[SerializeField] private float gravity;
 	[SerializeField] private float rotationSpeed;
 
 	[Header("Animations")] 
