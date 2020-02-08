@@ -123,13 +123,15 @@ public class SoulManager : MonoBehaviour
         if (this.CurrentBrokenSoulsAmount <= 0)
         {
             // Win
-            Debug.Log("Win");
+            this.userInterface.OnGameFinished(true);
+            Time.timeScale = 0;
         }
         
         if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
         {
             // Lose
-            Debug.Log("Lose");
+            this.userInterface.OnGameFinished(false);
+            Time.timeScale = 0;
         }
     }
 }
