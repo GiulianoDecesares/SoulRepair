@@ -56,7 +56,7 @@ public class BrokenSoulBehavior : ISoulBehavior
 
         if (targetSoul != null)
         {
-            if (targetSoul.isBroken)
+            if (targetSoul.IsBroken)
             {
                 // Broken vs broken
             }
@@ -73,14 +73,15 @@ public class BrokenSoulBehavior : ISoulBehavior
     {
         foreach (Collider otherCollider in others)
         {
-            Soul otherSoul = otherCollider.GetComponent<Soul>();
+            Soul otherSoul = otherCollider.GetComponentInParent<Soul>();
             
             if (otherSoul != null)
             {
                 // Broken soul catch healthy soul
                 // Broke every soul we touch <3
                 otherSoul.Broke();
-            } 
+                this.soul.SetTargetToFollow(null);
+            }
         }
     }
 }

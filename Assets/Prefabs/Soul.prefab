@@ -322,7 +322,7 @@ PrefabInstance:
     - target: {fileID: 4114744588134149077, guid: d6a2a3e7533b7d34ea7b8e62cadccea2,
         type: 3}
       propertyPath: userOverlapSphere
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4611388525558116362, guid: d6a2a3e7533b7d34ea7b8e62cadccea2,
         type: 3}

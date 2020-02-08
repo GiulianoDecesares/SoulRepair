@@ -18,19 +18,14 @@ public class Soul : MonoBehaviour, ISoul
     private NavMeshAgentDriver movementAgentDriver;
     private SoulManager manager;
     
-    private bool isMoving;
-    public bool isBroken { private set; get; }
+    private Soul targetToFollow;
+    
+    public bool IsBroken { private set; get; }
 
-    private void MoveToRandomSpot()
+    private void Update()
     {
-        if (this.movementAgentDriver != null)
-        {
-            this.movementAgentDriver.MoveTo(this.movementAgentDriver.GetRandomPointOnNavMesh());
-        }
-        else
-        {
-            Debug.LogError("Null movement agent driver reference");
-        }
+        if (this.targetToFollow != null)
+            this.movementAgentDriver.MoveTo(this.targetToFollow.transform.position);
     }
 
     public void Initialize(SoulManager parameterManager)
@@ -41,7 +36,17 @@ public class Soul : MonoBehaviour, ISoul
         
         if (this.movementAgentDriver != null)
         {
-            this.movementAgentDriver.OnStopped += this.MoveToRandomSpot;
+            this.movementAgentDriver.OnStopped += () =>
+            {
+                if (this.movementAgentDriver != null)
+                {
+                    this.movementAgentDriver.MoveTo(this.movementAgentDriver.GetRandomPointOnNavMesh());
+                }
+                else
+                {
+                    Debug.LogError("Null movement agent driver reference");
+                }
+            };
         }
         else
         {
@@ -56,7 +61,7 @@ public class Soul : MonoBehaviour, ISoul
 
     public void SetTargetToFollow(Soul parameterTarget)
     {
-        // this.movementAgentDriver.Follow(parameterTarget.transform);
+        this.targetToFollow = parameterTarget;
     }
 
     private void UpdateEvents()
@@ -86,7 +91,7 @@ public class Soul : MonoBehaviour, ISoul
 
         this.UpdateEvents();
 
-        this.isBroken = true;
+        this.IsBroken = true;
         
         // Notify manager
         this.manager.OnSoulBroke();
@@ -99,7 +104,7 @@ public class Soul : MonoBehaviour, ISoul
 
         this.UpdateEvents();
 
-        this.isBroken = false;
+        this.IsBroken = false;
         
         // Notify manager
         this.manager.OnSoulRepaired();

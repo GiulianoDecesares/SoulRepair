@@ -41,7 +41,7 @@ public class NavMeshAgentDriver : MonoBehaviour
     private bool DestinationReached()
     {
         bool destinationReached;
-        float positionOffsetTolerance = 0.3f;
+        float positionOffsetTolerance = 0.05f;
 
         Vector3 currentPosition = this.transform.position;
             
@@ -87,13 +87,14 @@ public class NavMeshAgentDriver : MonoBehaviour
                 Random.value);
         } while (randomPoint.y > 1);
 
-        // Use this to debug the destination point with a cube
+        /* Use this to debug the destination point with a cube
         GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
         
         primitive.GetComponent<Renderer>().material.color = Color.red;
 
         if (primitive != null)
-            primitive.transform.position = randomPoint;
+          primitive.transform.position = randomPoint;
+        */
 
         return randomPoint;
     }
