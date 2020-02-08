@@ -15,13 +15,17 @@ public class SoulManager : MonoBehaviour
     [SerializeField] private uint brokenSoulsAmount;
     [SerializeField] private uint healthySoulsAmount;
 
-    private List<Soul> brokenSouls;
-    private List<Soul> healthySouls;
+    public int currentBrokenSoulsAmount { private set; get; }
+    public int currentHealthySoulsAmount { private set; get; }
+
+    // TODO :: Possible design fail here
+    private bool gameHasStarted;
 
     private void Awake()
     {
-        this.brokenSouls = new List<Soul>();
-        this.healthySouls = new List<Soul>();
+        this.gameHasStarted = false;
+        this.currentBrokenSoulsAmount = 0;
+        this.currentHealthySoulsAmount = 0;
     }
 
     private void Start()
@@ -29,29 +33,34 @@ public class SoulManager : MonoBehaviour
         // Instantiate all souls
         for (uint soulIndex = 0; soulIndex < this.brokenSoulsAmount + this.healthySoulsAmount; soulIndex++)
         {
-            Soul soul = this.InstantiateSoul(this.GetRandomNavMeshPosition(), soulIndex < this.brokenSoulsAmount ? Soul.SoulState.Broken : Soul.SoulState.Healthy);
+            Soul soul = this.InstantiateSoul(this.GetRandomNavMeshPosition());
 
-            if (soul != null)
+            if (soulIndex < this.brokenSoulsAmount)
             {
-                if (soul.GetState() == Soul.SoulState.Broken)
-                {
-                    this.brokenSouls.Add(soul);
-                }
-                else if (soul.GetState() == Soul.SoulState.Broken)
-                {
-                    this.healthySouls.Add(soul);
-                }
+                soul.Broke();
             }
-            
-            this.userInterface.OnSoulCreated(soul); 
+            else
+            {
+                soul.Repair();
+            }
         }
+
+        this.gameHasStarted = true;
     }
 
-    private Soul InstantiateSoul(Vector3 position, Soul.SoulState initialState)
+    private Soul InstantiateSoul(Vector3 position)
     {
         GameObject soulGameObject = Instantiate(this.soulPrefab, position, Quaternion.identity);
         Soul soul = soulGameObject.GetComponent<Soul>();
-        soul?.Initialize(this, initialState);
+
+        if (soul != null)
+        {
+            soul.Initialize(this);
+        }
+        else
+        {
+            Debug.LogError("Null soul component");
+        }
 
         return soul;
     }
@@ -75,76 +84,40 @@ public class SoulManager : MonoBehaviour
 
         return randomPoint;
     }
-    
-    public void OnSoulDie(Soul soul)
+
+    public void OnSoulBroke()
     {
-        if (soul.GetState() == Soul.SoulState.Broken)
-        {
-            if (this.brokenSouls.Contains(soul))
-                this.brokenSouls.Remove(soul);
-        }
-        else if (soul.GetState() == Soul.SoulState.Healthy)
-        {
-            if (this.healthySouls.Contains(soul))
-                this.healthySouls.Remove(soul);
-        }
+        this.currentBrokenSoulsAmount++;
         
-        this.userInterface.OnSoulDestroyed(soul);
-        this.CheckForWinCondition();
+        // Notify UI
+        this.userInterface.OnSoulRatioChanged(this);
+        
+        if (this.gameHasStarted)
+            this.CheckForWinCondition();
     }
 
-    public void OnSoulChanged(Soul soul, Soul.SoulState previousState)
+    public void OnSoulRepaired()
     {
-        this.OnSoulDie(soul);
+        this.currentHealthySoulsAmount++;
         
-        if (soul.GetState() == Soul.SoulState.Broken)
-        {
-            this.brokenSouls.Add(soul);
-        }
-        else if (soul.GetState() == Soul.SoulState.Healthy)
-        {
-            this.healthySouls.Add(soul);
-        }
+        // Notify UI
+        this.userInterface.OnSoulRatioChanged(this);
         
-        this.userInterface.OnSoulChanged(soul, previousState);
-        this.CheckForWinCondition();
+        if (this.gameHasStarted)
+            this.CheckForWinCondition();
     }
 
     private void CheckForWinCondition()
     {
-        /*
-        if (this.healthySouls.Count <= 0)
-        {
-            Time.timeScale = 0;
-            Debug.Log("LOSE!");
-        }
-
-        if (this.brokenSouls.Count <= 0)
-        {
-            Time.timeScale = 0;
-            Debug.Log("WIN!");
-        }
-
-        if (!brokenInstantiatedSouls.Any())
+        if (this.currentBrokenSoulsAmount <= 0)
         {
             // Win
+            Debug.Log("Win");
         }
-        else if (!healthyInstantiatedSouls.Any())
+        else if (this.currentHealthySoulsAmount <= 0)
         {
             // Lose
-            Debug.Log("Loose");
+            Debug.Log("Lose");
         }
-
-        Debug.Log("Checking for win condition");
-
-        foreach (Soul soul in brokenInstantiatedSouls)
-        {
-            Debug.Log("Broken -> " + soul);
-        }
-        
-        foreach (Soul soul in healthyInstantiatedSouls)
-        {
-            Debug.Log("Healthy -> " + soul);
-        }*/
     }
 }

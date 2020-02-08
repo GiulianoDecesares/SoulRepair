@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
+		// Manage movement
 		Vector3 rotation = new Vector3(0, Input.GetAxisRaw("Horizontal") * this.rotationSpeed * Time.deltaTime, 0);
 		Vector3 move = new Vector3(0, 0, Input.GetAxisRaw("Vertical") * Time.deltaTime);
 
@@ -60,21 +61,12 @@ public class PlayerController : MonoBehaviour
 		this.animator.Walk(rotation.magnitude + move.magnitude);
 
 		if (Input.GetKeyDown(this.attack))
-		{
 			this.animator.Slash();
-		}
 	}
 
 	private void OnAttackRangeEnter(Collider[] others)
 	{
 		foreach (Collider other in others)
-		{
-			IEnemy enemy = other.GetComponent<IEnemy>();
-
-			if (enemy != null && !enemy.IsDead())
-			{
-				enemy.TakeDamage(this.damagePerHit);
-			}
-		}
+			other.GetComponent<ISoul>()?.Repair();
 	}
 }

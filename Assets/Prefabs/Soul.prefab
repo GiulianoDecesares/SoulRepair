@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4100148567758594914}
   - component: {fileID: 4100148567758594915}
   - component: {fileID: 1127676282}
+  - component: {fileID: 2026070179}
   m_Layer: 0
   m_Name: Soul
   m_TagString: Untagged
@@ -87,10 +88,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8d502a286e9b541ae168932ae4f6c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelRenderer: {fileID: 7718390321794356430}
-  defaultSpeed: 3.5
-  followingSpeed: 6
-  life: 5
   fieldOfView: {fileID: 7084898049520521762}
   interactionRange: {fileID: 143029972817029753}
 --- !u!135 &1127676282
@@ -106,6 +103,18 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2026070179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4100148567758594905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 661d1a1f2e6375148bd10fa1af0602e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1136720155
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -193,12 +202,6 @@ PrefabInstance:
 --- !u!4 &5006512735892623873 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 7f8becf5c5696e64fbe21cfe5cc532d1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1136720155}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &7718390321794356430 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -1504981713932161579, guid: 7f8becf5c5696e64fbe21cfe5cc532d1,
     type: 3}
   m_PrefabInstance: {fileID: 1136720155}
   m_PrefabAsset: {fileID: 0}
