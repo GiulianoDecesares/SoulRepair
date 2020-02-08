@@ -21,38 +21,11 @@ public class Soul : MonoBehaviour, ISoul
     private bool isMoving;
     public bool isBroken { private set; get; }
 
-    private void OnDisable()
-    {
-        if (this.movementAgentDriver != null)
-        {
-            this.movementAgentDriver.OnIdle -= this.MoveToRandomSpot;
-        }
-        else
-        {
-            Debug.LogError("Null agent driver reference");
-        }
-    }
-
-    private Vector3 GetRandomNavMeshPosition()
-    {
-        NavMeshTriangulation navMeshTriangulation = NavMesh.CalculateTriangulation();
-
-        int randomIndex = Random.Range(0, navMeshTriangulation.indices.Length - 3);
-
-        Vector3 randomPoint = Vector3.Lerp(navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex]],
-            navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 1]], Random.value);
-
-        Vector3.Lerp(randomPoint, navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 2]],
-            Random.value);
-
-        return randomPoint;
-    }
-
     private void MoveToRandomSpot()
     {
         if (this.movementAgentDriver != null)
         {
-            this.movementAgentDriver.MoveTo(this.GetRandomNavMeshPosition());
+            this.movementAgentDriver.MoveTo(this.movementAgentDriver.GetRandomPointOnNavMesh());
         }
         else
         {
@@ -68,7 +41,7 @@ public class Soul : MonoBehaviour, ISoul
         
         if (this.movementAgentDriver != null)
         {
-            this.movementAgentDriver.OnIdle += this.MoveToRandomSpot;
+            this.movementAgentDriver.OnStopped += this.MoveToRandomSpot;
         }
         else
         {
@@ -83,7 +56,7 @@ public class Soul : MonoBehaviour, ISoul
 
     public void SetTargetToFollow(Soul parameterTarget)
     {
-        this.movementAgentDriver.Follow(parameterTarget.transform);
+        // this.movementAgentDriver.Follow(parameterTarget.transform);
     }
 
     private void UpdateEvents()
@@ -96,8 +69,8 @@ public class Soul : MonoBehaviour, ISoul
 
         if (this.interactionRange != null)
             this.interactionRange.onDetection = null;
-        
-        
+
+
         // Subscribe new functionality
         if (this.fieldOfView != null)
             this.fieldOfView.onDetection += this.behavior.OnFieldOfViewEnter;
