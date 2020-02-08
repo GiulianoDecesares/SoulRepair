@@ -35,7 +35,13 @@ public class UIManager : MonoBehaviour
 
     public void Exit()
     {
-        Callbacks.ExitClick();
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
+        
+        // Callbacks.ExitClick();
     }
 
     public void ExitCredits()

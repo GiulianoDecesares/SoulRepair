@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class SoulManager : MonoBehaviour
@@ -124,14 +125,20 @@ public class SoulManager : MonoBehaviour
         {
             // Win
             this.userInterface.OnGameFinished(true);
-            Time.timeScale = 0;
+            StartCoroutine(this.MainMenuCoroutine());
         }
         
         if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
         {
             // Lose
             this.userInterface.OnGameFinished(false);
-            Time.timeScale = 0;
+            StartCoroutine(this.MainMenuCoroutine());
         }
+    }
+
+    private IEnumerator MainMenuCoroutine()
+    {
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadScene(0);
     }
 }
