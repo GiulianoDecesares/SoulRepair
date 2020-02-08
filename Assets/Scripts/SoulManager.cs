@@ -15,8 +15,8 @@ public class SoulManager : MonoBehaviour
     [SerializeField] private uint brokenSoulsAmount;
     [SerializeField] private uint healthySoulsAmount;
 
-    public int currentBrokenSoulsAmount { private set; get; }
-    public int currentHealthySoulsAmount { private set; get; }
+    public uint CurrentBrokenSoulsAmount { private set; get; }
+    public uint TotalSoulsAmount { private set; get; }
 
     // TODO :: Possible design fail here
     private bool gameHasStarted;
@@ -24,8 +24,9 @@ public class SoulManager : MonoBehaviour
     private void Awake()
     {
         this.gameHasStarted = false;
-        this.currentBrokenSoulsAmount = 0;
-        this.currentHealthySoulsAmount = 0;
+        
+        this.CurrentBrokenSoulsAmount = 0;
+        this.TotalSoulsAmount = this.brokenSoulsAmount + this.healthySoulsAmount;
     }
 
     private void Start()
@@ -38,6 +39,7 @@ public class SoulManager : MonoBehaviour
             if (soulIndex < this.brokenSoulsAmount)
             {
                 soul.Broke();
+                this.CurrentBrokenSoulsAmount++;
             }
             else
             {
@@ -46,6 +48,7 @@ public class SoulManager : MonoBehaviour
         }
 
         this.gameHasStarted = true;
+        this.userInterface.OnSoulRatioChanged(this);
     }
 
     private Soul InstantiateSoul(Vector3 position)
@@ -87,34 +90,40 @@ public class SoulManager : MonoBehaviour
 
     public void OnSoulBroke()
     {
-        this.currentBrokenSoulsAmount++;
-        
-        // Notify UI
-        this.userInterface.OnSoulRatioChanged(this);
-        
         if (this.gameHasStarted)
+        {
+            this.CurrentBrokenSoulsAmount++;
+         
+            // Notify UI
+            this.userInterface.OnSoulRatioChanged(this);
+            
             this.CheckForWinCondition();
+        }
     }
 
     public void OnSoulRepaired()
     {
-        this.currentHealthySoulsAmount++;
-        
-        // Notify UI
-        this.userInterface.OnSoulRatioChanged(this);
-        
         if (this.gameHasStarted)
+        {
+            if (this.CurrentBrokenSoulsAmount > 0)
+                this.CurrentBrokenSoulsAmount--;
+         
+            // Notify UI
+            this.userInterface.OnSoulRatioChanged(this);
+            
             this.CheckForWinCondition();
+        }
     }
 
     private void CheckForWinCondition()
     {
-        if (this.currentBrokenSoulsAmount <= 0)
+        if (this.CurrentBrokenSoulsAmount <= 0)
         {
             // Win
             Debug.Log("Win");
         }
-        else if (this.currentHealthySoulsAmount <= 0)
+        
+        if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
         {
             // Lose
             Debug.Log("Lose");

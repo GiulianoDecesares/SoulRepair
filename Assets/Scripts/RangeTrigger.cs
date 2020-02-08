@@ -43,6 +43,6 @@ public class RangeTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        this.onDetection?.Invoke(new [] { other });
+        this.onDetectionExit?.Invoke(new [] { other });
     }
 }

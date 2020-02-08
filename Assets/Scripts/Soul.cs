@@ -86,27 +86,36 @@ public class Soul : MonoBehaviour, ISoul
 
     public void Broke()
     {
-        this.behavior = new BrokenSoulBehavior(this);
-        this.behavior.Initialize();
+        // This check sucks
+        if (this.behavior is HealthySoulBehavior || this.behavior == null)
+        {
+            this.behavior = new BrokenSoulBehavior(this);
+            this.behavior.Initialize();
 
-        this.UpdateEvents();
+            this.UpdateEvents();
 
-        this.IsBroken = true;
+            this.IsBroken = true;
         
-        // Notify manager
-        this.manager.OnSoulBroke();
+            // Notify manager
+            this.manager.OnSoulBroke();
+        }
+        
     }
 
     public void Repair()
     {
-        this.behavior = new HealthySoulBehavior(this);
-        this.behavior.Initialize();
+        // This check sucks
+        if (this.behavior is BrokenSoulBehavior || this.behavior == null)
+        {
+            this.behavior = new HealthySoulBehavior(this);
+            this.behavior.Initialize();
 
-        this.UpdateEvents();
+            this.UpdateEvents();
 
-        this.IsBroken = false;
+            this.IsBroken = false;
         
-        // Notify manager
-        this.manager.OnSoulRepaired();
+            // Notify manager
+            this.manager.OnSoulRepaired();
+        }
     }
 }

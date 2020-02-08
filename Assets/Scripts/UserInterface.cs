@@ -11,23 +11,18 @@ public class UserInterface : MonoBehaviour
     {
         if (sender != null)
         {
-            this.UpdateSlider(sender.currentBrokenSoulsAmount, sender.currentHealthySoulsAmount);   
+            if (this.slider != null)
+            {
+                this.slider.value = sender.CurrentBrokenSoulsAmount / (float)sender.TotalSoulsAmount;
+            }
+            else
+            {
+                Debug.LogError("Null slider reference");
+            }
         }
         else
         {
             Debug.LogError("Null sender reference");
-        }
-    }
-
-    private void UpdateSlider(int brokenSoulsAmount, int healthySoulsAmount)
-    {
-        if (this.slider != null)
-        {
-            this.slider.value = brokenSoulsAmount / (float)(healthySoulsAmount + brokenSoulsAmount);
-        }
-        else
-        {
-            Debug.LogError("Null slider reference");
         }
     }
 }
