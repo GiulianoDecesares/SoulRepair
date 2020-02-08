@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UiManager : MonoBehaviour
+public class UIManager : MonoBehaviour
 {
     public GameObject CreditsContent;
     public GameObject MainMenuContent;

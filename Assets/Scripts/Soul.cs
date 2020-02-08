@@ -107,15 +107,19 @@ public class Soul : MonoBehaviour, ISoul
         // This check sucks
         if (this.behavior is BrokenSoulBehavior || this.behavior == null)
         {
+            /*
             this.behavior = new HealthySoulBehavior(this);
             this.behavior.Initialize();
 
             this.UpdateEvents();
 
             this.IsBroken = false;
-        
+            */
+
             // Notify manager
             this.manager.OnSoulRepaired();
+            
+            Destroy(this.gameObject);
         }
     }
 }

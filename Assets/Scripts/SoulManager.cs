@@ -106,7 +106,10 @@ public class SoulManager : MonoBehaviour
         if (this.gameHasStarted)
         {
             if (this.CurrentBrokenSoulsAmount > 0)
+            {
+                this.TotalSoulsAmount--;
                 this.CurrentBrokenSoulsAmount--;
+            }
          
             // Notify UI
             this.userInterface.OnSoulRatioChanged(this);
