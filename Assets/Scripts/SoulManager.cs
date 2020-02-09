@@ -106,11 +106,8 @@ public class SoulManager : MonoBehaviour
     {
         if (this.gameHasStarted)
         {
-            if (this.CurrentBrokenSoulsAmount > 0)
-            {
-                this.TotalSoulsAmount--;
-                this.CurrentBrokenSoulsAmount--;
-            }
+            this.TotalSoulsAmount--;
+            this.CurrentBrokenSoulsAmount--;
          
             // Notify UI
             this.userInterface.OnSoulRatioChanged(this);
@@ -126,9 +123,8 @@ public class SoulManager : MonoBehaviour
             // Win
             this.userInterface.OnGameFinished(true);
             StartCoroutine(this.MainMenuCoroutine());
-        }
-        
-        if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
+        } 
+        else if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
         {
             // Lose
             this.userInterface.OnGameFinished(false);
