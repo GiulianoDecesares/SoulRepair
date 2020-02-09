@@ -117,9 +117,9 @@ public class Soul : MonoBehaviour, ISoul
         else if (this.behavior is BrokenSoulBehavior)
         {
             Destroy(this.gameObject);
-        }
         
-        // Notify manager
-        this.manager.OnSoulRepaired();
+            // Notify manager
+            this.manager.OnSoulRepaired();
+        }
     }
 }

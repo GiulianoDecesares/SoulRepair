@@ -14,7 +14,7 @@ public class UserInterface : MonoBehaviour
         {
             if (this.slider != null)
             {
-                this.slider.value = sender.CurrentBrokenSoulsAmount / (float)sender.TotalSoulsAmount;
+                this.slider.value = sender.CurrentBrokenSoulsAmount / (float) (sender.CurrentNormalSoulsAmount + sender.CurrentBrokenSoulsAmount);
             }
             else
             {

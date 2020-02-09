@@ -16,8 +16,8 @@ public class SoulManager : MonoBehaviour
     [SerializeField] private uint brokenSoulsAmount;
     [SerializeField] private uint healthySoulsAmount;
 
-    public uint CurrentBrokenSoulsAmount { private set; get; }
-    public uint TotalSoulsAmount { private set; get; }
+    public int CurrentBrokenSoulsAmount { private set; get; }
+    public int CurrentNormalSoulsAmount { private set; get; }
 
     // TODO :: Possible design fail here
     private bool gameHasStarted;
@@ -27,7 +27,7 @@ public class SoulManager : MonoBehaviour
         this.gameHasStarted = false;
         
         this.CurrentBrokenSoulsAmount = 0;
-        this.TotalSoulsAmount = this.brokenSoulsAmount + this.healthySoulsAmount;
+        this.CurrentNormalSoulsAmount = 0;
     }
 
     private void Start()
@@ -45,6 +45,7 @@ public class SoulManager : MonoBehaviour
             else
             {
                 soul.Repair();
+                this.CurrentNormalSoulsAmount++;
             }
         }
 
@@ -93,8 +94,9 @@ public class SoulManager : MonoBehaviour
     {
         if (this.gameHasStarted)
         {
+            this.CurrentNormalSoulsAmount--;
             this.CurrentBrokenSoulsAmount++;
-         
+
             // Notify UI
             this.userInterface.OnSoulRatioChanged(this);
             
@@ -106,7 +108,6 @@ public class SoulManager : MonoBehaviour
     {
         if (this.gameHasStarted)
         {
-            this.TotalSoulsAmount--;
             this.CurrentBrokenSoulsAmount--;
          
             // Notify UI
@@ -124,7 +125,7 @@ public class SoulManager : MonoBehaviour
             this.userInterface.OnGameFinished(true);
             StartCoroutine(this.MainMenuCoroutine());
         } 
-        else if (this.TotalSoulsAmount == this.CurrentBrokenSoulsAmount)
+        else if (this.CurrentNormalSoulsAmount <= 0)
         {
             // Lose
             this.userInterface.OnGameFinished(false);
