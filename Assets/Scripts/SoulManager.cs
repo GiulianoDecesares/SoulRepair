@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
+using PlayFab;
+using PlayFab.ClientModels;
 
 public class SoulManager : MonoBehaviour
 {
@@ -144,8 +143,6 @@ public class SoulManager : MonoBehaviour
         {
             // Win
             this.userInterface.OnGameFinished(true);
-            this.LogScore();
-            
             StartCoroutine(this.MainMenuCoroutine());
         } 
         else if (this.CurrentNormalSoulsAmount <= 0)
@@ -154,11 +151,6 @@ public class SoulManager : MonoBehaviour
             this.userInterface.OnGameFinished(false);
             StartCoroutine(this.MainMenuCoroutine());
         }
-    }
-
-    private void LogScore()
-    {
-        
     }
 
     private IEnumerator MainMenuCoroutine()
