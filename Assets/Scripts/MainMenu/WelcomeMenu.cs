@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using PlayFab;
+using PlayFab.ClientModels;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class WelcomeMenu : MonoBehaviour
 {
@@ -9,6 +12,10 @@ public class WelcomeMenu : MonoBehaviour
     [SerializeField] private GameObject registerPanel;
     [SerializeField] private GameObject mainMenuButtonsContent;
     [SerializeField] private GameObject creditsPanel;
+
+    [SerializeField] private Text identificationNameText;
+
+    private string userIdentificationName;
     
     public void OnNewGameClick()
     {
@@ -30,13 +37,39 @@ public class WelcomeMenu : MonoBehaviour
 
     public void OnRegistrationPanelBeginClick()
     {
-        SceneManager.LoadScene(1);
+        // Register the player with id
+        LoginWithCustomIDRequest loginRequest = new LoginWithCustomIDRequest
+        {
+            CustomId = this.identificationNameText.text,
+            CreateAccount = true
+        };
+        
+        PlayFabClientAPI.LoginWithCustomID(loginRequest, OnLoginSuccess, OnLoginFail);
+
+        void OnLoginSuccess(LoginResult result)
+        {
+            // Catch the session ticket
+            PlayFabSettings.staticPlayer.ClientSessionTicket = result.SessionTicket;
+
+            // Load playable scene
+            SceneManager.LoadScene(1);
+        }
+
+        void OnLoginFail(PlayFabError error)
+        {
+            Debug.Log(error.GenerateErrorReport());
+        }
     }
 
     public void OnRegistrationPanelBackClick()
     {
         this.registerPanel.SetActive(false);
         this.mainMenuPanel.SetActive(true);
+    }
+
+    public void OnIdentificationNameFieldChanged()
+    {
+        this.userIdentificationName = this.identificationNameText.text;
     }
 
     public void OnExitClick()

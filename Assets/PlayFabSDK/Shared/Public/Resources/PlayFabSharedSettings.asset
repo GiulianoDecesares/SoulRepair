@@ -15,7 +15,7 @@ MonoBehaviour:
   TitleId: 4B226
   DeveloperSecretKey: 6QO4XDS8UKWECMCSX6JIXPJBTXIN81WMJ64AG4EWCGREDCYDSQ
   ProductionEnvironmentUrl: 
-  RequestType: 2
+  RequestType: 0
   AdvertisingIdType: 
   AdvertisingIdValue: 
   DisableAdvertising: 0

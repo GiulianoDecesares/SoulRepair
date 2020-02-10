@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
@@ -143,13 +144,36 @@ public class SoulManager : MonoBehaviour
         {
             // Win
             this.userInterface.OnGameFinished(true);
+            this.UpdateStatistics();
             StartCoroutine(this.MainMenuCoroutine());
         } 
         else if (this.CurrentNormalSoulsAmount <= 0)
         {
             // Lose
             this.userInterface.OnGameFinished(false);
+            this.UpdateStatistics();
             StartCoroutine(this.MainMenuCoroutine());
+        }
+    }
+
+    private void UpdateStatistics()
+    {
+        UpdateCharacterStatisticsRequest statisticsRequest = new UpdateCharacterStatisticsRequest
+        {
+            CharacterId = "9234992",
+            CharacterStatistics = new Dictionary<string, int> { { "HighScore", this.CurrentNormalSoulsAmount } }
+        };
+            
+        PlayFabClientAPI.UpdateCharacterStatistics(statisticsRequest, OnUpdateSuccess, OnUpdateFailed);
+
+        void OnUpdateSuccess(UpdateCharacterStatisticsResult result)
+        {
+            Debug.Log("Statistics updated!");
+        }
+
+        void OnUpdateFailed(PlayFabError error)
+        {
+            Debug.Log(error.GenerateErrorReport());
         }
     }
 
