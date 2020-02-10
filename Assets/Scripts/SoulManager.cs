@@ -51,6 +51,27 @@ public class SoulManager : MonoBehaviour
 
         this.gameHasStarted = true;
         this.userInterface.OnSoulRatioChanged(this);
+        
+        // StartCoroutine(this.PositionDebuggingCoroutine());
+    }
+
+    private IEnumerator PositionDebuggingCoroutine()
+    {
+        for (int superIndex = 0; superIndex < 100; superIndex++)
+        {
+            for (int index = 0; index < 300; index++)
+            {
+                GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                gameObject.GetComponent<Renderer>().material.color = Color.red;
+                gameObject.transform.position = this.GetRandomNavMeshPosition();
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(5f);
+        }
+
+        yield return null;
     }
 
     private Soul InstantiateSoul(Vector3 position)
@@ -72,20 +93,20 @@ public class SoulManager : MonoBehaviour
     
     private Vector3 GetRandomNavMeshPosition()
     {
-        Vector3 randomPoint = Vector3.zero;
+        Vector3 randomPoint;
         
         do
         {
             NavMeshTriangulation navMeshTriangulation = NavMesh.CalculateTriangulation();
 
             int randomIndex = Random.Range(0, navMeshTriangulation.indices.Length - 3);
+            
+            Vector3 randomVertex = navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex]];
+            Vector3 nextRandomVertex = navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 1]];
 
-            randomPoint = Vector3.Lerp(navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex]],
-                navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 1]], Random.value);
-
-            Vector3.Lerp(randomPoint, navMeshTriangulation.vertices[navMeshTriangulation.indices[randomIndex + 2]],
-                Random.value);
-        } while (randomPoint.y > 1);
+            randomPoint = Vector3.Lerp(randomVertex, nextRandomVertex, Random.value);
+        } 
+        while (randomPoint.y > 1);
 
         return randomPoint;
     }
