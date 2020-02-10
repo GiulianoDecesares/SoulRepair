@@ -144,6 +144,8 @@ public class SoulManager : MonoBehaviour
         {
             // Win
             this.userInterface.OnGameFinished(true);
+            this.LogScore();
+            
             StartCoroutine(this.MainMenuCoroutine());
         } 
         else if (this.CurrentNormalSoulsAmount <= 0)
@@ -152,6 +154,11 @@ public class SoulManager : MonoBehaviour
             this.userInterface.OnGameFinished(false);
             StartCoroutine(this.MainMenuCoroutine());
         }
+    }
+
+    private void LogScore()
+    {
+        
     }
 
     private IEnumerator MainMenuCoroutine()
