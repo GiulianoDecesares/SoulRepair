@@ -65,7 +65,15 @@ public class WelcomeMenu : MonoBehaviour
         {
             // Catch the session ticket
             PlayFabSettings.staticPlayer.ClientSessionTicket = result.SessionTicket;
+
+            // Update display name for this user
+            UpdateUserTitleDisplayNameRequest updateDisplayNameRequest = new UpdateUserTitleDisplayNameRequest
+            {
+                DisplayName = this.identificationNameText.text
+            };
             
+            PlayFabClientAPI.UpdateUserTitleDisplayName(updateDisplayNameRequest, null, null);
+
             this.registerPanel.SetActive(false);
             this.mainMenuPanel.SetActive(true);
         }
@@ -116,7 +124,7 @@ public class WelcomeMenu : MonoBehaviour
             
             foreach (PlayerLeaderboardEntry entry in leaderboardResult.Leaderboard)
             {
-                this.leaderboardsPanelText.text += $"{entry.DisplayName} : {entry.StatValue} \n";
+                this.leaderboardsPanelText.text += $"{entry.Profile.DisplayName} : {entry.StatValue} \n";
             }
         }
 
