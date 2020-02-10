@@ -158,18 +158,19 @@ public class SoulManager : MonoBehaviour
 
     private void UpdateStatistics()
     {
-        UpdateCharacterStatisticsRequest statisticsRequest = new UpdateCharacterStatisticsRequest
+        UpdatePlayerStatisticsRequest statisticsRequest = new UpdatePlayerStatisticsRequest
         {
-            CharacterId = "9234992",
-            CharacterStatistics = new Dictionary<string, int> { { "HighScore", this.CurrentNormalSoulsAmount } }
+            Statistics = new List<StatisticUpdate>()
+            {
+                new StatisticUpdate
+                {
+                    StatisticName = "HighScore",
+                    Value = this.CurrentNormalSoulsAmount
+                }
+            }
         };
             
-        PlayFabClientAPI.UpdateCharacterStatistics(statisticsRequest, OnUpdateSuccess, OnUpdateFailed);
-
-        void OnUpdateSuccess(UpdateCharacterStatisticsResult result)
-        {
-            Debug.Log("Statistics updated!");
-        }
+        PlayFabClientAPI.UpdatePlayerStatistics(statisticsRequest, null, OnUpdateFailed);
 
         void OnUpdateFailed(PlayFabError error)
         {
